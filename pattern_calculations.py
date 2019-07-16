@@ -1,5 +1,5 @@
+import math
 def tesselateShape(inShape, height, width, isMirrored=True, xoffset=0):
-    print(inShape)
     shapes = list()
     x = -width
     iter = 0
@@ -9,7 +9,6 @@ def tesselateShape(inShape, height, width, isMirrored=True, xoffset=0):
       while y < screen_height:
           for point in inShape:
               if(isMirrored and iter%2==0):
-                  print("", end='')
                   shape.append((round(point[0] + x + iter * xoffset), round(point[1] + y)))
               else:
                   shape.append((round(x + iter * xoffset + width - point[0]), round(point[1] + y)))
@@ -21,15 +20,14 @@ def tesselateShape(inShape, height, width, isMirrored=True, xoffset=0):
       shapes.append(shape)
     return shapes
 
-def tesselateMixedShape(inShape, height, width, isMirrored=True, xoffset=0, connected=True):
-    print(inShape)
+def tesselateMixedShape(inShape, height, width, screenSize, isMirrored=True, xoffset=0, connected=True):
     shapes = list()
     x = -width
     iter = 0
-    while x < screen_width:
+    while x < screenSize[0]:
       shape = list()
       y = 0
-      while y < screen_height:
+      while y < screenSize[1]:
           first = True
           for point in inShape:
               if first and not connected:
@@ -73,3 +71,15 @@ def calculateMixedPatternWidth(shape):
     maxVal = max(shape, key=lambda x: x[1][0])       # find max x in list
     minVal = min(shape, key=lambda x: x[1][0])       # find min x in list
     return (abs(maxVal[1][0] - minVal[1][0]))
+
+def scaleFromOrigin(scale, shape):
+    scaledShape = list()
+    for point in shape:
+        scaledShape.append((point[0] * scale, point[1] * scale))
+    return scaledShape
+
+def scaleMixedFromOrigin(scale, shape):
+    scaledShape = list()
+    for point in shape:
+        scaledShape.append((point[0],(point[1][0] * scale,point[1][1] * scale)))
+    return scaledShape

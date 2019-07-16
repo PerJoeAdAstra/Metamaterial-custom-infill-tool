@@ -1,3 +1,7 @@
+import sdl2.ext
+from pattern_calculations import *
+from sdl_manager import *
+
 def calculatePatternOffset(pattern):
     minX = min(pattern, key=lambda x: x[0])
     minY = min(pattern, key=lambda x: x[1])
@@ -5,7 +9,6 @@ def calculatePatternOffset(pattern):
 
 def centralisePattern(pattern, xoffset, yoffset):
     offset = calculatePatternOffset(pattern)
-    print("offset:", offset)
     centralisedPattern = list()
     for point in pattern:
         centralisedPattern.append((point[0] - offset[0] + xoffset, point[1] - offset[1] + yoffset))
@@ -21,24 +24,32 @@ def removeBorder(pattern, border):
         borderlessPattern.append((point[0], (point[1][0] - int(border/2), point[1][1] - int(border/2))))
     return borderlessPattern
 
+
+def scaleEditor(pattern, border = 100):
+    scale = 1
+    editorSize = (calculatePatternWidth(pattern) + border, calculatePatternActualHeight(pattern) + border)
+    while False:
+        editor = sdl2.ext.Window("PatternEditor", size=editorSize)
+        editRenderer = sdl2.ext.Renderer(editor)
+        editor.show()
+    return pattern
+
 def editPattern(pattern, border=100):
     editorSize = (calculatePatternWidth(pattern) + border, calculatePatternActualHeight(pattern) + border)
     editor = sdl2.ext.Window("PatternEditor", size=editorSize)
-    editor.show()
     editRenderer = sdl2.ext.Renderer(editor)
+    editor.show()
     # clear the screen
     # draw the points
-    clearScreen(editRenderer, editorSize)
-    # editRenderer.present()
+    # clearScreen(editRenderer)
+    editRenderer.present()
     centralPattern = centralisePattern(pattern, int(border/2), int(border/2))
     completePath = False
-    # while(completePath == False): # while no path chosen
-    # print(centralPattern)
     for point in centralPattern:
         drawSphere(2, point, editorSize, editRenderer, red)
 
     processor = sdl2.ext.TestEventProcessor()
-    processor.run(editor)
+    # processor.run(editor)
     editRenderer.present()
 
     newPattern = list()
@@ -62,7 +73,6 @@ def editPattern(pattern, border=100):
                     highlightIndex = (highlightIndex + 1) % len(centralPattern)
                     highlightPoint(centralPattern[highlightIndex], editorSize, editRenderer, white, white)
                 elif event.key.keysym.sym == sdl2.SDLK_RETURN:
-                    print("Enter!")
                     # remove from old pattern and add to new pattern, draw pattern
                     highlightPoint(centralPattern[highlightIndex], editorSize, editRenderer, blue, black)
                     newPattern.append((1, centralPattern.pop(highlightIndex)))
@@ -73,7 +83,6 @@ def editPattern(pattern, border=100):
                         highlightIndex = highlightIndex % len(centralPattern)
                         highlightPoint(centralPattern[highlightIndex], editorSize, editRenderer, white, white)
                 elif event.key.keysym.sym == sdl2.SDLK_s:
-                    print("Skip!")
                     highlightPoint(centralPattern[highlightIndex], editorSize, editRenderer, blue, black)
                     newPattern.append((0,centralPattern.pop(highlightIndex)))
                     drawMixedPath(newPattern, editRenderer)
@@ -83,8 +92,6 @@ def editPattern(pattern, border=100):
                         highlightIndex = highlightIndex % len(centralPattern)
                         highlightPoint(centralPattern[highlightIndex], editorSize, editRenderer, white, white)
                 elif event.key.keysym.sym == sdl2.SDLK_z:
-                    print("Undo!")
-                    print(len(newPattern))
                     if(len(newPattern) > 0):
                         highlightPoint(centralPattern[highlightIndex], editorSize, editRenderer, red, white)
                         drawMixedPath(newPattern, editRenderer, col1 = black)
@@ -92,13 +99,9 @@ def editPattern(pattern, border=100):
                         drawMixedPath(newPattern, editRenderer)
                         highlightPoint(centralPattern[highlightIndex], editorSize, editRenderer, white, white)
                     else:
-                        print("Cannot undo")
+                        print("Cannot undo!")
                         # highlightIndex = highlightIndex % len(centralPattern)
                         highlightPoint(centralPattern[highlightIndex], editorSize, editRenderer, white, white)
-                elif event.key.keysym.sym == sdl2.SDLK_PLUS:
-                    print("Enlarge!")
-                elif event.key.keysym.sym == sdl2.SDLK_MINUS:
-                    print("Reduce!")
                 elif event.key.keysym.sym == sdl2.SDLK_ESCAPE:
                     print("Quit!")
                     running = False

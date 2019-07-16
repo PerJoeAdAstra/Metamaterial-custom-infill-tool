@@ -1,3 +1,6 @@
+import sdl2.ext
+import math
+
 white = (255,255,255)
 black = (0,0,0)
 red = (255,0,0)
@@ -15,12 +18,8 @@ def drawSphere(radius, center, screenSize, render, col):
                 if(pow((x - center[0]),2) + pow((y - center[1]), 2) <= pow(radius,2)):
                     render.draw_point([x,y], sdl2.ext.Color(col[0],col[1],col[2]))
 
-def clearScreen(render, screenSize, col=black, slowClear = False):
-    for x in range(screenSize[0]):
-        for y in range(screenSize[1]):
-            render.draw_point([x,y], sdl2.ext.Color(col[0],col[1],col[2]))
-        if slowClear:
-            render.present()
+def clearScreen(render):
+    render.clear()
 
 def drawShape(shape, col, render, slowdraw=False):
     for index, point in enumerate(shape):
