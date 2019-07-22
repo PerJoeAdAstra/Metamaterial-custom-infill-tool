@@ -32,8 +32,21 @@ def writeMixedPoints(filename, points):
     print("-- Writing formatted points -- ")
     file = open(filename, "w+")
     for point in points:
-        file.write('(' + str(point[0]) + ',' + '(' + str(point[1][0]) + ',' + str(point[1][1]) + ')' + ')' + '\n')
+        file.write('(' + str(point[0]) + ',' + '(' + str(round(point[1][0])) + ',' + str(round(point[1][1])) + ')' + ')' + '\n')
     file.close()
+
+def detectFileType(filename):
+    file = open(filename, "r")
+    firstLine = file.readline()
+    if(firstLine[0] == '()'):                    #if first character of file is open bracket. Assume formatted mixed. return 0
+        file.close()
+        return 0
+    for line in file:
+        if line == '\n' or line == "#\n":
+            file.close()
+            return 1                             #otherwise check file for # or blank lines. If one is found return 1
+    file.close()
+    return 2                                     #otherwise return 2.
 
 def readPoints(filename):
     print("-- Reading points --")
@@ -69,20 +82,20 @@ def readMixedPoints(filename, isConnected = True):
         firstline = firstline.splitlines()[0]
         coord = firstline.split(',')
         if(isConnected):
-            pattern.append((1, (int(coord[0]), int(coord[1]))))
+            pattern.append((1, (int(round(float(coord[0]))), int(round(float(coord[1]))))))
         else:
-            pattern.append((0, (int(coord[0]), int(coord[1]))))
+            pattern.append((0, (int(round(float(coord[0]))), int(round(float(coord[1]))))))
         toDraw = True
         for line in file:
-            if(line == '\n'):
+            if(line == '\n' or line == "#\n"):
                 toDraw = False
             else:
                 line = line.splitlines()[0]
                 coord = line.split(',')
                 if toDraw:
-                    pattern.append((1, (int(coord[0]), int(coord[1]))))
+                    pattern.append((1, (int(round(float(coord[0]))), int(round(float(coord[1]))))))
                 else:
-                    pattern.append((0, (int(coord[0]), int(coord[1]))))
+                    pattern.append((0, (int(round(float(coord[0]))), int(round(float(coord[1]))))))
                 toDraw = True
     file.close()
     return pattern

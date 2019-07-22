@@ -27,6 +27,9 @@ def drawShape(shape, col, render, slowdraw=False):
     if slowdraw:
         render.present()
 
+def drawSpecialLine(p1, p2, render, col = green):
+    drawLine(roundt((p1[1][0],p1[1][1])), roundt(p2), render, col)
+
 def drawLine(a, b, render, col):
   dx = abs(a[0] - b[0])
   dy = abs(a[1] - b[1])
@@ -56,23 +59,26 @@ def interpolate(a, b, size):
     current[1] = current[1] + step1
   return results
 
+def roundt(t):
+    return(round(t[0]),round(t[1]))
+
 def drawMixedPath(path, render, col1 = white, col2 = green, slowdraw=False, drawDotted = False):
     for index, point in enumerate(path):
         if(index + 1 < len(path)):
           if(path[index + 1][0] == 1):
-            drawLine(point[1], path[(index + 1)][1], render, col = col1)
+            drawLine(roundt(point[1]), roundt(path[(index + 1)][1]), render, col = col1)
           elif drawDotted:
-            drawDottedLine(point[1], path[(index+1)][1], render, col = col2)
+            drawDottedLine(roundt(point[1]), roundt(path[(index+1)][1]), render, col = col2)
         if(slowdraw):
             render.present()
 
-def drawPath(path, render, col, slowdraw=False, dotted = False):
+def drawPath(path, render, col=white, slowdraw=False, dotted = False):
   for index, point in enumerate(path):
     if(index + 1 < len(path)):
       if(not dotted):
-        drawLine(point, path[(index + 1)], render, col)
+        drawLine(roundt(point), roundt(path[(index + 1)]), render, col)
       else:
-        drawDottedLine(point, path[(index+1)], render, col)
+        drawDottedLine(roundt(point), roundt(path[(index+1)]), render, col)
       if(slowdraw):
         render.present()
 
@@ -95,3 +101,13 @@ def drawMixedShapes(shapes, render, slowdraw=False, drawDotted = True):
       drawMixedPath(shape, render, col1 = red, col2=cyan, slowdraw=slowdraw, drawDotted = drawDotted)
     colour = not(colour)
   render.present()
+
+def drawPoints(points, render, editorSize):
+  for point in points:
+     p = roundt((point[0], point[1]))
+     drawSphere(2, p, editorSize, render, red)
+
+def drawMixedPoints(points, render, editorSize):
+  for point in points:
+     p = roundt((point[1][0], point[1][1]))
+     drawSphere(2, p, editorSize, render, red)

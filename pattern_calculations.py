@@ -22,7 +22,7 @@ def tesselateShape(inShape, height, width, isMirrored=True, xoffset=0):
 
 def tesselateMixedShape(inShape, height, width, screenSize, isMirrored=True, xoffset=0, connected=True):
     shapes = list()
-    x = -width
+    x = 0
     iter = 0
     while x < screenSize[0]:
       shape = list()
@@ -31,13 +31,13 @@ def tesselateMixedShape(inShape, height, width, screenSize, isMirrored=True, xof
           first = True
           for point in inShape:
               if first and not connected:
-                  shape.append((0,(round(x + iter * xoffset + width - point[1][0]), round(point[1][1] + y))))
+                  shape.append((0,(round(point[1][0] + x + iter * xoffset), round(point[1][1] + y))))
                   first = False
               else:
                   if(isMirrored and iter%2==0):
-                      shape.append((point[0],(round(point[1][0] + x + iter * xoffset), round(point[1][1] + y))))
-                  else:
                       shape.append((point[0],(round(x + iter * xoffset + width - point[1][0]), round(point[1][1] + y))))
+                  else:
+                      shape.append((point[0],(round(point[1][0] + x + iter * xoffset), round(point[1][1] + y))))
           y+= height
       x += width
       iter += 1
@@ -82,4 +82,28 @@ def scaleMixedFromOrigin(scale, shape):
     scaledShape = list()
     for point in shape:
         scaledShape.append((point[0],(point[1][0] * scale,point[1][1] * scale)))
+    return scaledShape
+
+def invertX(shape, scale = -1):
+    scaledShape = list()
+    for point in shape:
+        scaledShape.append((point[0] * scale,point[1]))
+    return scaledShape
+
+def invertY(shape, scale = -1):
+    scaledShape = list()
+    for point in shape:
+        scaledShape.append((point[0], point[1] * scale))
+    return scaledShape
+
+def invertMixedX(shape, scale = -1):
+    scaledShape = list()
+    for point in shape:
+        scaledShape.append((point[0],(point[1][0] * scale,point[1][1])))
+    return scaledShape
+
+def invertMixedY(shape, scale = -1):
+    scaledShape = list()
+    for point in shape:
+        scaledShape.append((point[0],(point[1][0], point[1][1] * scale)))
     return scaledShape
